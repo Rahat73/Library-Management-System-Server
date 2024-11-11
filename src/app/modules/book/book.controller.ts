@@ -56,7 +56,7 @@ const deleteBook = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Book deleted successfully",
+    message: "Book successfully deleted",
     // data: result,
   });
 });
