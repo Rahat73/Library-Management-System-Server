@@ -25,6 +25,7 @@
     "cors": "^2.8.5",
     "eslint": "^9.14.0",
     "express": "^4.21.1",
-    "http-status": "1.7.4"
+    "http-status": "1.7.4",
+    "zod": "^3.23.8"
   }
 }
