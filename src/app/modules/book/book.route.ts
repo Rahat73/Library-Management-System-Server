@@ -13,4 +13,14 @@ router.post(
 
 router.get("/", BookControllers.getAllBooks);
 
+router.get("/:bookId", BookControllers.getBookById);
+
+router.put(
+  "/:bookId",
+  validateRequest(BookValidations.updateBookValidation),
+  BookControllers.updateBook
+);
+
+router.delete("/:bookId", BookControllers.deleteBook);
+
 export const BookRoutes = router;
