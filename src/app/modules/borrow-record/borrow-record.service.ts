@@ -1,3 +1,5 @@
+import httpStatus from "http-status";
+import AppError from "../../errors/app-error";
 import prisma from "../../utils/prisma";
 import { dueTime } from "./borrow-record.constant";
 import { IBorrowRecord } from "./borrow-record.interface";
@@ -10,7 +12,7 @@ const createBorrowRecordIntoDB = async (payload: IBorrowRecord) => {
   });
 
   if (book.availableCopies < 1) {
-    throw new Error("Book is out of stock");
+    throw new AppError(httpStatus.CONFLICT, "Book is out of stock");
   }
 
   await prisma.member.findUniqueOrThrow({
@@ -49,16 +51,31 @@ const returnBookDB = async (borrowId: string) => {
   });
 
   if (record.returnDate) {
-    throw new Error("Book already returned");
+    throw new AppError(httpStatus.CONFLICT, "Book already returned");
   }
 
-  const result = await prisma.borrowRecord.update({
-    where: {
-      borrowId,
-    },
-    data: {
-      returnDate: new Date(),
-    },
+  const result = await prisma.$transaction(async (transactionClient) => {
+    await transactionClient.book.update({
+      where: {
+        bookId: record.bookId,
+      },
+      data: {
+        availableCopies: {
+          increment: 1,
+        },
+      },
+    });
+
+    const updatedRecord = await transactionClient.borrowRecord.update({
+      where: {
+        borrowId,
+      },
+      data: {
+        returnDate: new Date(),
+      },
+    });
+
+    return updatedRecord;
   });
 
   return result;

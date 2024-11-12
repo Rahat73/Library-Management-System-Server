@@ -6,10 +6,10 @@ const noRoutesFound = (req: Request, res: Response) => {
     success: false,
     status: httpStatus.NOT_FOUND,
     message: "API NOT FOUND!",
-    error: {
-      path: req.originalUrl,
-      message: "Your requested path is not found!",
-    },
+    // error: {
+    //   path: req.originalUrl,
+    //   message: "Your requested path is not found!",
+    // },
   });
 };
 
