@@ -19,8 +19,23 @@ const createBorrowRecordIntoDB = async (payload: IBorrowRecord) => {
     },
   });
 
-  const result = await prisma.borrowRecord.create({
-    data: payload,
+  const result = await prisma.$transaction(async (transactionClient) => {
+    await transactionClient.book.update({
+      where: {
+        bookId: payload.bookId,
+      },
+      data: {
+        availableCopies: {
+          decrement: 1,
+        },
+      },
+    });
+
+    const record = await transactionClient.borrowRecord.create({
+      data: payload,
+    });
+
+    return record;
   });
 
   return result;

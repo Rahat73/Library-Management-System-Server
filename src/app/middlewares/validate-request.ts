@@ -8,7 +8,6 @@ const validateRequest =
       const parsedBody = await schema.parseAsync({
         body: req.body,
       });
-      console.log(parsedBody);
       req.body = parsedBody.body;
       return next();
     } catch (err) {
