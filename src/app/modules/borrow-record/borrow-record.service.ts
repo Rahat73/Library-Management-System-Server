@@ -89,9 +89,38 @@ const getAllOverdueBorrowsFromDB = async () => {
         lte: new Date(new Date().getTime() - dueTime),
       },
     },
+    select: {
+      borrowId: true,
+      borrowDate: true,
+      book: {
+        select: {
+          title: true,
+        },
+      },
+      member: {
+        select: {
+          name: true,
+        },
+      },
+    },
   });
 
-  return result;
+  const overdueList = result.map((record) => {
+    const overdueDays =
+      Math.floor(
+        (new Date().getTime() - record.borrowDate.getTime()) /
+          (1000 * 60 * 60 * 24)
+      ) - 14;
+
+    return {
+      borrowId: record.borrowId,
+      bookTitle: record.book.title,
+      borrowerName: record.member.name,
+      overdueDays,
+    };
+  });
+
+  return overdueList;
 };
 
 export const BorrowRecordServices = {

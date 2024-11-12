@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 import { ZodError } from "zod";
+import AppError from "../errors/app-error";
 
 const globalErrorHandler = (
   err: any,
@@ -31,6 +32,8 @@ const globalErrorHandler = (
     statusCode = httpStatus.BAD_REQUEST;
     message = err.issues[0].message;
     error = err.issues;
+  } else if (err instanceof AppError) {
+    statusCode = err.statusCode;
   }
 
   res.status(statusCode).json({
