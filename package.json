@@ -4,7 +4,10 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts"
+    "start": "node dist/server.js",
+    "dev": "tsnd --respawn src/server.ts",
+    "build": "tsc",
+    "postinstall": "prisma generate"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
