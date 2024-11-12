@@ -21,6 +21,8 @@ const createBorrowRecordIntoDB = async (payload: IBorrowRecord) => {
     },
   });
 
+  // reducing availableCopies when borrowing
+  // performing atomic transaction
   const result = await prisma.$transaction(async (transactionClient) => {
     await transactionClient.book.update({
       where: {
@@ -54,6 +56,8 @@ const returnBookDB = async (borrowId: string) => {
     throw new AppError(httpStatus.CONFLICT, "Book already returned");
   }
 
+  // increasing availableCopies when returning
+  // performing atomic transaction
   const result = await prisma.$transaction(async (transactionClient) => {
     await transactionClient.book.update({
       where: {
@@ -86,7 +90,7 @@ const getAllOverdueBorrowsFromDB = async () => {
     where: {
       returnDate: null,
       borrowDate: {
-        lte: new Date(new Date().getTime() - dueTime),
+        lte: new Date(new Date().getTime() - dueTime), //checking overdue 14 days
       },
     },
     select: {
@@ -106,6 +110,7 @@ const getAllOverdueBorrowsFromDB = async () => {
   });
 
   const overdueList = result.map((record) => {
+    // calculating overdue days
     const overdueDays =
       Math.floor(
         (new Date().getTime() - record.borrowDate.getTime()) /
